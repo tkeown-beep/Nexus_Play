@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS PLAY — Kits de Robótica Interactiva</title>
+
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Oswald (Display Condensed) & Inter (Body UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'velvet-wine': '#260212',
+                        'burgundy-stage': '#4f0423',
+                        'impossible-red': '#e10600',
+                        'blush-highlight': '#ffc7c6',
+                        'butcher-black': '#000000',
+                        'bone-white': '#ffffff',
+                    },
+                    fontFamily: {
+                        'display': ['Oswald', 'sans-serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'button': '15px',
+                        'card': '12px',
+                        'feature': '38px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom typography styles matching the Impossible Foods style reference */
+        body {
+            background-color: #260212;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-display-condensed {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            line-height: 0.75;
+            letter-spacing: 0.04em;
+        }
+
+        /* Custom Mask Clips for Decorative Floating Hero Images */
+        .mask-blob-1 {
+            clip-path: polygon(20% 0%, 90% 10%, 100% 70%, 75% 100%, 10% 90%, 0% 30%);
+        }
+        .mask-blob-2 {
+            clip-path: polygon(10% 15%, 85% 0%, 100% 80%, 65% 95%, 0% 75%);
+        }
+        .mask-blob-3 {
+            clip-path: polygon(5% 0%, 100% 15%, 85% 90%, 20% 100%, 0% 50%);
+        }
+
+        /* Pulse Animation for Red Hot Elements */
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
+        }
+        .pulse-accent {
+            animation: subtle-pulse 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #260212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f0423;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e10600;
+        }
+    </style>
+</head>
+<body class="bg-velvet-wine text-bone-white antialiased selection:bg-impossible-red selection:text-white">
+
+    <!-- STICKY TOP NAVIGATION BAR (Butcher Black #000000) -->
+    <header class="sticky top-0 z-40 bg-butcher-black border-b border-black text-white px-4 md:px-8 py-3">
+        <div class="max-w-[1280px] mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <span class="font-display-condensed text-2xl md:text-3xl font-bold text-impossible-red tracking-wider group-hover:scale-105 transition-transform">
+                    NEXUS PLAY
+                </span>
+                <span class="hidden sm:inline-block text-[10px] bg-impossible-red text-white font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
+                    ROBOTICS
+                </span>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wider">
+                <a href="#catalogo" class="hover:text-blush-highlight transition-colors flex items-center gap-1">
+                    KITS DE ROBÓTICA <i class="fa-solid font-xs fa-chevron-down text-[10px] text-impossible-red"></i>
+                </a>
+                <a href="#simulador" class="hover:text-blush-highlight transition-colors flex items-center gap-1">
+                    PRUEBA DE PULSO <span class="bg-impossible-red/20 text-impossible-red text-[10px] px-1.5 py-0.5 rounded font-bold">DEMO</span>
+                </a>
+                <a href="#manifiesto" class="hover:text-blush-highlight transition-colors">MANIFIESTO</a>
+            </nav>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('locatorModal')" class="hidden sm:flex items-center gap-2 bg-transparent border border-white text-white hover:border-blush-highlight hover:text-blush-highlight text-xs md:text-sm font-medium px-3.5 py-2 rounded-button transition-all">
+                    <i class="fa-solid fa-location-dot text-impossible-red"></i>
+                    <span>PUNTOS DE VENTA</span>
+                </button>
+
+                <button onclick="toggleCartDrawer()" class="relative bg-impossible-red hover:bg-red-700 text-white text-xs md:text-sm font-medium px-4 py-2 rounded-button flex items-center gap-2 transition-all active:scale-95">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="hidden xs:inline">CARRITO</span>
+                    <span id="cartCountBadge" class="bg-white text-impossible-red text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ml-1">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO DISPLAY BLOCK -->
+    <section class="relative bg-velvet-wine py-16 md:py-28 px-4 overflow-hidden border-b border-black">
+        <!-- Floating Mask-Cut Circuit Visual Elements (Decorative Background Floats) -->
+        <div class="absolute -top-10 left-4 w-32 h-32 md:w-56 md:h-56 bg-burgundy-stage mask-blob-1 opacity-70 hover:opacity-100 transition-opacity duration-500 pointer-events-none flex items-center justify-center p-4">
+            <svg class="w-2/3 h-2/3 text-impossible-red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="absolute top-1/2 -right-8 -translate-y-1/2 w-40 h-40 md:w-72 md:h-72 bg-burgundy-stage mask-blob-2 opacity-60 hover:opacity-100 transition-opacity duration-500 pointer-events-none flex items-center justify-center p-6">
+            <i class="fa-solid fa-microchip text-6xl md:text-8xl text-blush-highlight/40"></i>
+        </div>
+
+        <div class="max-w-[1280px] mx-auto text-center relative z-10 flex flex-col items-center">
+            <!-- Eyebrow -->
+            <div class="text-impossible-red text-xs sm:text-sm md:text-base font-bold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <span>◂</span> KITS INTERACTIVOS Y ELECTRÓNICA DE PRECISIÓN <span>▸</span>
+            </div>
+
+            <!-- Massive Display Headline -->
+            <h1 class="font-display-condensed text-impossible-red text-5xl sm:text-7xl md:text-9xl lg:text-[140px] font-bold tracking-wider leading-[0.75] my-2 max-w-5xl">
+                ROBÓTICA REAL
+            </h1>
+            <div class="font-display-condensed text-blush-highlight text-3xl sm:text-5xl md:text-7xl lg:text-[90px] font-bold tracking-wider leading-[0.8] mb-8">
+                (DESDE CERO)
+            </div>
+
+            <p class="max-w-xl text-center text-gray-300 text-sm sm:text-base md:text-lg mb-8 font-normal leading-relaxed">
+                Sin complicaciones innecesarias. Kits de circuito cerrado, motores y sistemas digitales listos para armar, aprender y dominar.
+            </p>
+
+            <!-- Hero Action CTAs -->
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <a href="#catalogo" class="bg-impossible-red hover:bg-red-700 text-white font-medium text-sm md:text-base px-6 py-3.5 rounded-button uppercase tracking-wider flex items-center gap-3 transition-all hover:scale-105">
+                    <span>EXPLORAR CATÁLOGO</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+                <a href="#simulador" class="bg-transparent border border-white hover:border-blush-highlight text-white hover:text-blush-highlight font-medium text-sm md:text-base px-6 py-3.5 rounded-button uppercase tracking-wider flex items-center gap-3 transition-all">
+                    <i class="fa-solid fa-gamepad text-impossible-red"></i>
+                    <span>PROBAR DEMO INTERACTIVA</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORY FILTER & NUMBER BADGES SECTION -->
+    <section id="catalogo" class="bg-burgundy-stage py-12 px-4 border-b border-black">
+        <div class="max-w-[1280px] mx-auto">
+            <!-- Section Opener Accent -->
+            <div class="text-center mb-8">
+                <p class="text-impossible-red text-xs sm:text-sm font-bold uppercase tracking-[0.15em] mb-2">
+                    ◂ TECNOLOGÍA EN TUS MANOS ▸
+                </p>
+                <h2 class="font-display-condensed text-3xl sm:text-5xl md:text-6xl text-white font-bold tracking-wide">
+                    NUESTROS PROYECTOS DESTACADOS
+                </h2>
+            </div>
+
+            <!-- Category Tabs with Circular Number Badges -->
+            <div class="flex flex-wrap items-center justify-center gap-3 md:gap-6 mb-10">
+                <button onclick="filterProducts('all', this)" class="category-tab active flex items-center gap-2 text-sm md:text-lg font-bold uppercase text-white border-b-2 border-impossible-red pb-1 px-3 transition-all">
+                    TODOS LOS KITS
+                    <span class="bg-burgundy-stage text-white text-xs w-5 h-5 rounded-full border border-impossible-red flex items-center justify-center">3</span>
+                </button>
+                <button onclick="filterProducts('destreza', this)" class="category-tab flex items-center gap-2 text-sm md:text-lg font-bold uppercase text-blush-highlight hover:text-white border-b-2 border-transparent pb-1 px-3 transition-all">
+                    DESTREZA & PULSO
+                    <span class="bg-velvet-wine text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">1</span>
+                </button>
+                <button onclick="filterProducts('mecanica', this)" class="category-tab flex items-center gap-2 text-sm md:text-lg font-bold uppercase text-blush-highlight hover:text-white border-b-2 border-transparent pb-1 px-3 transition-all">
+                    MECÁNICA & MOTORES
+                    <span class="bg-velvet-wine text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">1</span>
+                </button>
+                <button onclick="filterProducts('digital', this)" class="category-tab flex items-center gap-2 text-sm md:text-lg font-bold uppercase text-blush-highlight hover:text-white border-b-2 border-transparent pb-1 px-3 transition-all">
+                    DIGITAL & AZAR
+                    <span class="bg-velvet-wine text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">1</span>
+                </button>
+            </div>
+
+            <!-- PRODUCT GRID (3 Core Items) -->
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Product Card 1: Juego de Pulso Estable -->
+                <div class="product-card bg-burgundy-stage border border-black rounded-card p-5 flex flex-col justify-between hover:border-impossible-red transition-all duration-300" data-category="destreza">
+                    <div>
+                        <!-- High Impact Mock Canvas / SVG Box -->
+                        <div class="relative bg-velvet-wine rounded-lg p-6 mb-5 overflow-hidden group min-h-[220px] flex items-center justify-center border border-black/40">
+                            <span class="absolute top-3 left-3 bg-impossible-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">PRECISIÓN</span>
+                            <span class="absolute top-3 right-3 text-blush-highlight font-display-condensed text-2xl font-bold">$35.00</span>
+                            
+                            <!-- SVG Illustration for Steady Hand Game -->
+                            <svg class="w-36 h-36 text-impossible-red group-hover:scale-110 transition-transform duration-300" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                                <!-- Curved Wire Path -->
+                                <path d="M 10,70 Q 25,10 40,60 T 70,30 T 90,80" stroke="#ffc7c6" stroke-width="3" fill="none"/>
+                                <!-- Loop wand -->
+                                <circle cx="40" cy="60" r="6" stroke="#e10600" stroke-width="2.5" fill="#260212"/>
+                                <line x1="40" y1="66" x2="40" y2="90" stroke="#e10600" stroke-width="3"/>
+                                <!-- Alarm LED -->
+                                <circle cx="85" cy="20" r="5" fill="#e10600"/>
+                                <path d="M85 10 L85 15 M75 20 L80 20 M90 20 L95 20" stroke="#e10600" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[11px] uppercase tracking-widest text-blush-highlight font-semibold">CIRCUITO DE DESTREZA</span>
+                        </div>
+                        <h3 class="font-display-condensed text-2xl md:text-3xl font-bold text-white mb-2 tracking-wide uppercase">
+                            JUEGO DE PULSO ESTABLE
+                        </h3>
+                        <p class="text-xs text-gray-300 mb-6 line-clamp-2 leading-relaxed">
+                            Pone a prueba tu concentración. Circuito de alambre conductor con buzzer de sonido, indicador LED de error y contador de fallos.
+                        </p>
+                    </div>
+
+                    <!-- Dual CTAs -->
+                    <div class="flex items-center gap-2 pt-2 border-t border-black/40">
+                        <button onclick="addToCart('p1')" class="flex-1 bg-impossible-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-3 rounded-button uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>AÑADIR</span>
+                        </button>
+                        <button onclick="openProductDetail('p1')" class="bg-transparent border border-white hover:border-blush-highlight text-white hover:text-blush-highlight text-xs font-medium py-2.5 px-3 rounded-button uppercase transition-colors">
+                            DETALLES
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Card 2: Ascensor Interactivo -->
+                <div class="product-card bg-burgundy-stage border border-black rounded-card p-5 flex flex-col justify-between hover:border-impossible-red transition-all duration-300" data-category="mecanica">
+                    <div>
+                        <!-- SVG Graphic -->
+                        <div class="relative bg-velvet-wine rounded-lg p-6 mb-5 overflow-hidden group min-h-[220px] flex items-center justify-center border border-black/40">
+                            <span class="absolute top-3 left-3 bg-impossible-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">MECÁNICA</span>
+                            <span class="absolute top-3 right-3 text-blush-highlight font-display-condensed text-2xl font-bold">$48.00</span>
+                            
+                            <!-- SVG Elevator Icon -->
+                            <svg class="w-36 h-36 text-impossible-red group-hover:scale-110 transition-transform duration-300" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="25" y="10" width="50" height="80" rx="3" stroke="#4f0423" stroke-width="3"/>
+                                <rect x="35" y="40" width="30" height="35" rx="2" stroke="#e10600" stroke-width="2.5" fill="#260212"/>
+                                <!-- Pulley wires -->
+                                <line x1="50" y1="10" x2="50" y2="40" stroke="#ffc7c6" stroke-width="2" stroke-dasharray="3,3"/>
+                                <circle cx="50" cy="18" r="5" stroke="#e10600" fill="#260212"/>
+                                <!-- Floor numbers -->
+                                <text x="47" y="60" fill="#ffc7c6" font-size="10" font-weight="bold">3</text>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[11px] uppercase tracking-widest text-blush-highlight font-semibold">SISTEMA ELECTROMECÁNICO</span>
+                        </div>
+                        <h3 class="font-display-condensed text-2xl md:text-3xl font-bold text-white mb-2 tracking-wide uppercase">
+                            ASCENSOR INTERACTIVO DE FERIA
+                        </h3>
+                        <p class="text-xs text-gray-300 mb-6 line-clamp-2 leading-relaxed">
+                            Modelo a escala con motor a pasos, control de pisos mediante botones táctiles y display digital indicador de posición.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-2 border-t border-black/40">
+                        <button onclick="addToCart('p2')" class="flex-1 bg-impossible-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-3 rounded-button uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>AÑADIR</span>
+                        </button>
+                        <button onclick="openProductDetail('p2')" class="bg-transparent border border-white hover:border-blush-highlight text-white hover:text-blush-highlight text-xs font-medium py-2.5 px-3 rounded-button uppercase transition-colors">
+                            DETALLES
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Card 3: Ruleta Digital -->
+                <div class="product-card bg-burgundy-stage border border-black rounded-card p-5 flex flex-col justify-between hover:border-impossible-red transition-all duration-300" data-category="digital">
+                    <div>
+                        <div class="relative bg-velvet-wine rounded-lg p-6 mb-5 overflow-hidden group min-h-[220px] flex items-center justify-center border border-black/40">
+                            <span class="absolute top-3 left-3 bg-impossible-red text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">DIGITAL</span>
+                            <span class="absolute top-3 right-3 text-blush-highlight font-display-condensed text-2xl font-bold">$32.00</span>
+                            
+                            <!-- SVG Roulette Graphic -->
+                            <svg class="w-36 h-36 text-impossible-red group-hover:rotate-45 transition-transform duration-700" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="50" cy="50" r="38" stroke="#ffc7c6" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="12" stroke="#e10600" fill="#260212"/>
+                                <!-- LED Array around circle -->
+                                <circle cx="50" cy="18" r="3" fill="#e10600"/>
+                                <circle cx="72" cy="28" r="3" fill="#ffc7c6"/>
+                                <circle cx="82" cy="50" r="3" fill="#e10600"/>
+                                <circle cx="72" cy="72" r="3" fill="#ffc7c6"/>
+                                <circle cx="50" cy="82" r="3" fill="#e10600"/>
+                                <circle cx="28" cy="72" r="3" fill="#ffc7c6"/>
+                                <circle cx="18" cy="50" r="3" fill="#e10600"/>
+                                <circle cx="28" cy="28" r="3" fill="#ffc7c6"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[11px] uppercase tracking-widest text-blush-highlight font-semibold">MICROCONTROLADOR & LEDS</span>
+                        </div>
+                        <h3 class="font-display-condensed text-2xl md:text-3xl font-bold text-white mb-2 tracking-wide uppercase">
+                            RULETA DE LA FORTUNA DIGITAL
+                        </h3>
+                        <p class="text-xs text-gray-300 mb-6 line-clamp-2 leading-relaxed">
+                            Circuito secuencial de alta velocidad con 10 LEDs ultra brillantes, altavoz integrado para efectos de desaceleración y botón de inicio.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-2 border-t border-black/40">
+                        <button onclick="addToCart('p3')" class="flex-1 bg-impossible-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-3 rounded-button uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>AÑADIR</span>
+                        </button>
+                        <button onclick="openProductDetail('p3')" class="bg-transparent border border-white hover:border-blush-highlight text-white hover:text-blush-highlight text-xs font-medium py-2.5 px-3 rounded-button uppercase transition-colors">
+                            DETALLES
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTERACTIVE GAME SIMULATOR: PRUEBA DE PULSO ESTABLE -->
+    <section id="simulador" class="bg-velvet-wine py-16 px-4 border-b border-black">
+        <div class="max-w-[1280px] mx-auto">
+            <div class="text-center mb-8">
+                <span class="text-impossible-red text-xs sm:text-sm font-bold uppercase tracking-[0.2em]">◂ DEMO INTERACTIVA EN VIVO ▸</span>
+                <h2 class="font-display-condensed text-4xl sm:text-6xl text-white font-bold tracking-wide mt-1">
+                    PRUEBA TU PULSO VIRTUAL
+                </h2>
+                <p class="text-gray-300 text-sm max-w-lg mx-auto mt-2">
+                    Guía la argolla roja a lo largo del cable sin tocarlo. ¡Si haces contacto, sonarás la alarma del circuito!
+                </p>
+            </div>
+
+            <!-- Game Canvas Container -->
+            <div class="bg-burgundy-stage border-2 border-black rounded-feature p-4 md:p-8 max-w-4xl mx-auto shadow-2xl relative">
+                <!-- Status Header -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4 bg-velvet-wine p-4 rounded-xl border border-black">
+                    <div class="flex items-center gap-3">
+                        <div id="alarmLed" class="w-4 h-4 rounded-full bg-gray-600 transition-colors"></div>
+                        <span id="gameStatusText" class="font-display-condensed text-lg text-white">ESTADO: LISTO</span>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <span class="text-[10px] text-gray-400 block uppercase">Fallos</span>
+                            <span id="failCount" class="font-display-condensed text-2xl text-impossible-red font-bold">0</span>
+                        </div>
+                        <button onclick="resetSteadyGame()" class="bg-impossible-red hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-button uppercase transition-all">
+                            REINICIAR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Surface -->
+                <div class="relative w-full overflow-hidden rounded-xl border border-black bg-black/60 touch-none cursor-crosshair">
+                    <canvas id="gameCanvas" class="w-full h-[320px] block"></canvas>
+                </div>
+
+                <div class="mt-4 text-center text-xs text-blush-highlight">
+                    * Mueve el ratón o desliza con el dedo de izquierda a derecha sin tocar la línea curva roja.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BRAND MANIFESTO SECTION -->
+    <section id="manifiesto" class="bg-burgundy-stage py-20 px-4 border-b border-black text-center">
+        <div class="max-w-4xl mx-auto">
+            <span class="text-impossible-red text-xs sm:text-sm font-bold uppercase tracking-[0.2em] mb-2 block">
+                ◂ FILOSOFÍA NEXUS PLAY ▸
+            </span>
+            <h2 class="font-display-condensed text-4xl sm:text-6xl md:text-7xl text-white font-bold leading-none mb-6">
+                CREA. APRENDE. DOMINA.
+            </h2>
+            <p class="text-gray-300 text-base md:text-xl font-normal leading-relaxed mb-8">
+                No creemos en juguetes desechables ni en cajas negras precintadas. Cada kit de Nexus Play está diseñado para exponer la electrónica pura: cables, motores, transistores y LEDs que responden directamente a tus comandos.
+            </p>
+            <a href="#catalogo" class="inline-block bg-impossible-red hover:bg-red-700 text-white font-bold text-sm md:text-base px-8 py-4 rounded-button uppercase tracking-wider transition-all hover:scale-105">
+                OBTÉN TU PRIMER KIT ($32 - $48)
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-butcher-black text-white py-12 px-4 border-t border-black">
+        <div class="max-w-[1280px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+            <div>
+                <span class="font-display-condensed text-3xl font-bold text-impossible-red block">
+                    NEXUS PLAY
+                </span>
+                <p class="text-xs text-gray-400 mt-1">
+                    Kits de Robótica Interactiva & Electrónica Didáctica.
+                </p>
+            </div>
+
+            <div class="text-xs text-gray-400">
+                &copy; 2026 NEXUS PLAY INC. TODOS LOS DERECHOS RESERVADOS.
+            </div>
+
+            <div class="flex items-center gap-4 text-xl">
+                <a href="#" class="text-white hover:text-impossible-red transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="text-white hover:text-impossible-red transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="text-white hover:text-impossible-red transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR DRAWER -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+        <!-- Backdrop -->
+        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto"></div>
+
+        <!-- Panel -->
+        <div class="absolute top-0 right-0 h-full w-full max-w-md bg-burgundy-stage border-l border-black p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 pointer-events-auto">
+            <div>
+                <div class="flex items-center justify-between border-b border-black pb-4 mb-6">
+                    <h3 class="font-display-condensed text-2xl text-white font-bold tracking-wide">
+                        TU CARRITO DE COMPRAS
+                    </h3>
+                    <button onclick="toggleCartDrawer()" class="text-white hover:text-impossible-red text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Free Shipping Progress -->
+                <div class="bg-velvet-wine p-3 rounded-lg mb-6 border border-black/40">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-gray-300">Envío Gratis (+ $50.00)</span>
+                        <span id="shippingProgressText" class="text-impossible-red font-bold">Faltan $50.00</span>
+                    </div>
+                    <div class="w-full bg-black/60 h-2 rounded-full overflow-hidden">
+                        <div id="shippingProgressBar" class="bg-impossible-red h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cartItemsContainer" class="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
+                    <!-- Dynamic cart items will render here -->
+                    <div class="text-center py-8 text-gray-400 text-sm">
+                        Tu carrito está vacío actualmente.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Checkout area -->
+            <div class="border-t border-black pt-4">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-300 text-sm">SUBTOTAL:</span>
+                    <span id="cartSubtotal" class="font-display-condensed text-3xl text-blush-highlight font-bold">$0.00</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-impossible-red hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-button uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
+                    <span>FINALIZAR COMPRA</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="productDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+        <div class="bg-burgundy-stage border-2 border-black rounded-card max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('productDetailModal')" class="absolute top-4 right-4 text-white hover:text-impossible-red text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="productDetailContent">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- STORE LOCATOR MODAL -->
+    <div id="locatorModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+        <div class="bg-burgundy-stage border-2 border-black rounded-card max-w-md w-full p-6 relative">
+            <button onclick="closeModal('locatorModal')" class="absolute top-4 right-4 text-white hover:text-impossible-red text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="font-display-condensed text-3xl text-white font-bold mb-4">PUNTOS DE VENTA</h3>
+            <p class="text-xs text-gray-300 mb-6">Encuentra kits de Nexus Play en nuestras tiendas aliadas de electrónica y robótica.</p>
+
+            <div class="space-y-3">
+                <div class="bg-velvet-wine p-3 rounded-lg border border-black">
+                    <h4 class="font-bold text-sm text-blush-highlight">RoboTech Hub Central</h4>
+                    <p class="text-xs text-gray-300">Av. De la Innovación 405, Sector Tecnológico</p>
+                    <span class="text-[10px] text-impossible-red font-semibold">DISPONIBLE HOY</span>
+                </div>
+                <div class="bg-velvet-wine p-3 rounded-lg border border-black">
+                    <h4 class="font-bold text-sm text-blush-highlight">Mundo Electrónico Express</h4>
+                    <p class="text-xs text-gray-300">Plaza de la Ciencia, Local 12</p>
+                    <span class="text-[10px] text-impossible-red font-semibold">DISPONIBLE HOY</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Database of Products
+        const PRODUCTS = {
+            'p1': {
+                id: 'p1',
+                name: 'JUEGO DE PULSO ESTABLE',
+                category: 'destreza',
+                price: 35.00,
+                desc: 'Circuito interactivo de precisión con buzzer de sonido continuo, indicador LED de fallo y medidor de resistencia.',
+                components: ['Estructura de alambre de cobreado', 'Argolla de contacto aislada', 'Buzzer pasivo de 5V', 'LED rojo de alta luminosidad', 'Módulo de batería AA'],
+                difficulty: 'Fácil (15-20 min de ensamblado)'
+            },
+            'p2': {
+                id: 'p2',
+                name: 'ASCENSOR INTERACTIVO DE FERIA',
+                category: 'mecanica',
+                price: 48.00,
+                desc: 'Modelo electromecánico a escala con motor a pasos NEMA, controladores de parada, display digital de pisos y gabinete acrílico.',
+                components: ['Motor a pasos + driver', 'Display de 7 segmentos LED', 'Pulsadores industriales de piso', 'Estructura acrílica cortada en láser', 'Poleas y guías de precisión'],
+                difficulty: 'Intermedio (45 min de ensamblado)'
+            },
+            'p3': {
+                id: 'p3',
+                name: 'RULETA DE LA FORTUNA DIGITAL',
+                category: 'digital',
+                price: 32.00,
+                desc: 'Ruleta electrónica programable con simulación de desaceleración real por microcontrolador, altavoz piezoeléctrico y 10 LEDs.',
+                components: ['Microcontrolador precargado', '10 LEDs ultra brillantes rojos/rosas', 'Botonera de inicio instantáneo', 'Altavoz de tonos sintéticos', 'PCB serigrafiada en negro/rojo'],
+                difficulty: 'Fácil (20 min de ensamblado)'
+            }
+        };
+
+        // State
+        let cart = {};
+
+        // Filtering
+        function filterProducts(category, element) {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-impossible-red', 'text-white');
+                tab.classList.add('border-transparent', 'text-blush-highlight');
+            });
+            element.classList.add('active', 'border-impossible-red', 'text-white');
+            element.classList.remove('border-transparent', 'text-blush-highlight');
+
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Cart Drawer Mechanics
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const isVisible = drawer.classList.contains('opacity-100');
+            
+            if (isVisible) {
+                drawer.classList.remove('opacity-100');
+                drawer.querySelector('.absolute.top-0').classList.add('translate-x-full');
+                setTimeout(() => {
+                    drawer.classList.add('pointer-events-none');
+                }, 300);
+            } else {
+                drawer.classList.remove('pointer-events-none');
+                drawer.classList.add('opacity-100');
+                drawer.querySelector('.absolute.top-0').classList.remove('translate-x-full');
+            }
+        }
+
+        function addToCart(productId) {
+            if (cart[productId]) {
+                cart[productId].qty += 1;
+            } else {
+                cart[productId] = {
+                    ...PRODUCTS[productId],
+                    qty: 1
+                };
+            }
+            updateCartUI();
+            
+            // Open drawer automatically on add
+            const drawer = document.getElementById('cartDrawer');
+            if (drawer.classList.contains('pointer-events-none')) {
+                toggleCartDrawer();
+            }
+        }
+
+        function changeQty(productId, delta) {
+            if (cart[productId]) {
+                cart[productId].qty += delta;
+                if (cart[productId].qty <= 0) {
+                    delete cart[productId];
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItemsContainer');
+            const countBadge = document.getElementById('cartCountBadge');
+            const subtotalEl = document.getElementById('cartSubtotal');
+            const shippingBar = document.getElementById('shippingProgressBar');
+            const shippingText = document.getElementById('shippingProgressText');
+
+            let totalQty = 0;
+            let subtotal = 0;
+            let html = '';
+
+            Object.values(cart).forEach(item => {
+                totalQty += item.qty;
+                const itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+
+                html += `
+                    <div class="bg-velvet-wine p-3 rounded-lg border border-black flex items-center justify-between">
+                        <div>
+                            <h4 class="font-display-condensed text-lg text-white font-bold uppercase">${item.name}</h4>
+                            <span class="text-xs text-blush-highlight font-semibold">$${item.price.toFixed(2)} c/u</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeQty('${item.id}', -1)" class="w-6 h-6 bg-burgundy-stage hover:bg-impossible-red text-white font-bold rounded flex items-center justify-center transition-colors">-</button>
+                            <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
+                            <button onclick="changeQty('${item.id}', 1)" class="w-6 h-6 bg-burgundy-stage hover:bg-impossible-red text-white font-bold rounded flex items-center justify-center transition-colors">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            countBadge.innerText = totalQty;
+            subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Tu carrito está vacío actualmente.</div>`;
+            } else {
+                container.innerHTML = html;
+            }
+
+            // Shipping logic ($50 threshold)
+            const threshold = 50.0;
+            if (subtotal >= threshold) {
+                shippingBar.style.width = '100%';
+                shippingText.innerText = '¡Envío Gratis desbloqueado!';
+            } else {
+                const pct = (subtotal / threshold) * 100;
+                const diff = threshold - subtotal;
+                shippingBar.style.width = `${pct}%`;
+                shippingText.innerText = `Faltan $${diff.toFixed(2)}`;
+            }
+        }
+
+        function checkout() {
+            if (Object.keys(cart).length === 0) {
+                alert("Añade productos antes de finalizar la compra.");
+                return;
+            }
+            alert("¡Gracias por tu compra en Nexus Play! Simulación de pedido completada con éxito.");
+            cart = {};
+            updateCartUI();
+            toggleCartDrawer();
+        }
+
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        function openProductDetail(productId) {
+            const product = PRODUCTS[productId];
+            const content = document.getElementById('productDetailContent');
+
+            content.innerHTML = `
+                <span class="bg-impossible-red text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">${product.category}</span>
+                <h2 class="font-display-condensed text-3xl md:text-4xl font-bold text-white mt-2 mb-1">${product.name}</h2>
+                <span class="font-display-condensed text-3xl text-blush-highlight font-bold block mb-4">$${product.price.toFixed(2)}</span>
+                
+                <p class="text-sm text-gray-200 mb-6 leading-relaxed">${product.desc}</p>
+
+                <div class="mb-6">
+                    <h4 class="font-bold text-xs uppercase text-impossible-red tracking-wider mb-2">Componentes Incluidos:</h4>
+                    <ul class="list-disc list-inside text-xs text-gray-300 space-y-1">
+                        ${product.components.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="mb-6 bg-velvet-wine p-3 rounded-lg border border-black">
+                    <span class="text-xs text-gray-400 block uppercase">Nivel de Dificultad</span>
+                    <span class="text-sm text-white font-semibold">${product.difficulty}</span>
+                </div>
+
+                <button onclick="addToCart('${product.id}'); closeModal('productDetailModal');" class="w-full bg-impossible-red hover:bg-red-700 text-white font-bold py-3 px-4 rounded-button uppercase tracking-wider transition-colors">
+                    AÑADIR AL CARRITO ($${product.price.toFixed(2)})
+                </button>
+            `;
+
+            openModal('productDetailModal');
+        }
+
+        // STEADY HAND CANVAS GAME SIMULATOR
+        let gameCanvas, ctx;
+        let isTouching = false;
+        let failCount = 0;
+        let playerPos = { x: 20, y: 160 };
+
+        function initCanvasGame() {
+            gameCanvas = document.getElementById('gameCanvas');
+            ctx = gameCanvas.getContext('2d');
+
+            // Responsive sizing
+            const rect = gameCanvas.parentElement.getBoundingClientRect();
+            gameCanvas.width = rect.width;
+            gameCanvas.height = 320;
+
+            // Canvas interaction handlers
+            gameCanvas.addEventListener('mousemove', handleMove);
+            gameCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+            drawGame();
+        }
+
+        function resetSteadyGame() {
+            failCount = 0;
+            document.getElementById('failCount').innerText = failCount;
+            document.getElementById('alarmLed').className = 'w-4 h-4 rounded-full bg-gray-600';
+            document.getElementById('gameStatusText').innerText = 'ESTADO: LISTO';
+            drawGame();
+        }
+
+        function triggerAlarm() {
+            failCount++;
+            document.getElementById('failCount').innerText = failCount;
+            document.getElementById('alarmLed').className = 'w-4 h-4 rounded-full bg-impossible-red animate-ping';
+            document.getElementById('gameStatusText').innerText = '¡ALARMA! CONTACTO DETECTADO';
+
+            setTimeout(() => {
+                document.getElementById('alarmLed').className = 'w-4 h-4 rounded-full bg-impossible-red';
+            }, 1000);
+        }
+
+        function handleMove(e) {
+            const rect = gameCanvas.getBoundingClientRect();
+            playerPos.x = e.clientX - rect.left;
+            playerPos.y = e.clientY - rect.top;
+            checkCollision();
+            drawGame();
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const rect = gameCanvas.getBoundingClientRect();
+                playerPos.x = e.touches[0].clientX - rect.left;
+                playerPos.y = e.touches[0].clientY - rect.top;
+                checkCollision();
+                drawGame();
+            }
+        }
+
+        function checkCollision() {
+            // Check distance to curve at player's X
+            const w = gameCanvas.width;
+            const h = gameCanvas.height;
+            const xPct = playerPos.x / w;
+
+            // Theoretical curve formula: y = h/2 + Math.sin(xPct * Math.PI * 3) * (h/3)
+            const curveY = (h / 2) + Math.sin(xPct * Math.PI * 3) * (h / 3.2);
+
+            const dist = Math.abs(playerPos.y - curveY);
+            if (dist < 8) { // Loop radius is 14
+                triggerAlarm();
+            }
+        }
+
+        function drawGame() {
+            if (!ctx) return;
+            const w = gameCanvas.width;
+            const h = gameCanvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw Background Wire Line
+            ctx.beginPath();
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#ffc7c6';
+            ctx.lineCap = 'round';
+
+            for (let x = 0; x <= w; x += 5) {
+                const xPct = x / w;
+                const y = (h / 2) + Math.sin(xPct * Math.PI * 3) * (h / 3.2);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Draw Wand Player Ring
+            ctx.beginPath();
+            ctx.arc(playerPos.x, playerPos.y, 14, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#e10600';
+            ctx.fillStyle = 'rgba(225, 6, 0, 0.2)';
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Window Init
+        window.onload = function() {
+            initCanvasGame();
+            window.addEventListener('resize', initCanvasGame);
+        };
+    </script>
+</body>
+</html>
